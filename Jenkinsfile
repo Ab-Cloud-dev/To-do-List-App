@@ -1,10 +1,6 @@
 pipeline {
   agent { label 'Node01' }
 
-  environment {
-    SERVER_IP = credentials('prod-server-ip')
-  }
-
   stages {
     stage('Git Checkout') {
       steps {
