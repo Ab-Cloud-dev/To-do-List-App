@@ -1,30 +1,19 @@
 pipeline {
   agent { label 'Node01' }
-   tools {
-    git 'git'  // The name configured in Global Tool Configuration
-  }
   environment {
     SERVER_IP = credentials('prod-server-ip')
   }
-  
-  stages {
-    stage('git') {
-      agent { label "Node01" }
-      steps {
-        script {
-          checkout([
-            $class: 'GitSCM',
-            branches: [[name: '*/main']],
-            userRemoteConfigs: [[url: 'https://github.com/Ab-Cloud-dev/To-do-List-App.git']],
-            extensions: [[
-              $class: 'RelativeTargetDirectory',
-              relativeTargetDir: 'test-pipeline'
-            ]]
-          ])
+    stages {
+        stage('git') {
+            agent {
+                label "Node01"
+            }
+            steps {
+                script {
+                    git 'https://github.com/Ab-Cloud-dev/To-do-List-App.git'
+                }
+            }
         }
-      }
-    }
-  
   stages {
     stage('Checkout') {
       steps {
