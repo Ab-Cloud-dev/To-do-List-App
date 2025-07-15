@@ -1,8 +1,8 @@
 pipeline {
-    agent any
+   agent { label 'Node01' }  // all stages run on Node01
 
     environment {
-        SERVER_IP = credentials('prod-server-ip')
+        SERVER_IP = credentials('Node01')
     }
     stages {
         stage('Setup') {
