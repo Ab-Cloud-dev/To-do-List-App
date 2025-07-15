@@ -1,25 +1,24 @@
 pipeline {
   agent { label 'Node01' }
+
   environment {
     SERVER_IP = credentials('prod-server-ip')
   }
-    stages {
-        stage('git') {
-            agent {
-                label "Node01"
-            }
-            steps {
-                script {
-                    git 'https://github.com/Ab-Cloud-dev/To-do-List-App.git'
-                }
-            }
-        }
+
   stages {
+    stage('Git Checkout') {
+      steps {
+        // You don't need 'git' inside script if using checkout scm later, but if you prefer:
+        git url: 'https://github.com/Ab-Cloud-dev/To-do-List-App.git'
+      }
+    }
+
     stage('Checkout') {
       steps {
         checkout scm
       }
     }
+
     stage('Setup & Test') {
       steps {
         sh '''
@@ -28,6 +27,7 @@ pipeline {
         '''
       }
     }
+
     stage('Deploy Flask Service') {
       steps {
         sh '''
