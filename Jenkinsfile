@@ -1,8 +1,12 @@
 pipeline {
   agent { label 'Node01' }
+   tools {
+    git 'git'  // The name configured in Global Tool Configuration
+  }
   environment {
     SERVER_IP = credentials('prod-server-ip')
   }
+  
   stages {
     stage('git') {
       agent { label "Node01" }
