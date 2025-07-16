@@ -4,6 +4,14 @@ pipeline {
   stages {
     stage('Checkout & Setup') {
       steps {
+        script {
+          // Create directory and set permissions
+          sh '''
+            sudo mkdir -p /home/ec2-user/app
+            sudo chown -R jenkins:jenkins /home/ec2-user/app
+            sudo chmod -R 755 /home/ec2-user/app
+          '''
+        }
         ws('/home/ec2-user/app') {
           checkout([
             $class: 'GitSCM',
