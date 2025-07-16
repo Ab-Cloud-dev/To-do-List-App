@@ -17,7 +17,7 @@ pipeline {
           ])
           sh '''
             sudo python3 -m venv venv
-            sudo . venv/bin/activate
+            . venv/bin/activate
             sudo pip install -r requirements.txt
             sudo pytest
           '''
