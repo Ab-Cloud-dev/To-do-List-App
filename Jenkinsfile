@@ -1,24 +1,38 @@
+#!groovy
 pipeline {
   agent any
 
+  options {
+    // Avoid the implicit checkout to control when/what code is fetched
+    skipDefaultCheckout(true)
+    // Keep workspace clean between runs (optional)
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+  }
+
   stages {
-    stage('Git Checkout') {
+    stage('Checkout & Setup') {
       steps {
-        // You don't need 'git' inside script if using checkout scm later, but if you prefer:
-        git url: 'https://github.com/Ab-Cloud-dev/To-do-List-App.git'
-      }
-    }
+        // Single checkout step using declarative style; can add shallow clone and refspec options
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: '*/main']],  // or your desired branch
+          userRemoteConfigs: [[
+            url: 'https://github.com/Ab-Cloud-dev/To-do-List-App.git'
+          ]],
+          extensions: [
+            // only fetch the latest commit
+            [$class: 'CloneOption', shallow: true, depth: 1, noTags: false],
+            // reduce data fetch
+            [$class: 'PruneStaleBranch'],
+            [$class: 'CleanBeforeCheckout']
+          ]
+        ])
 
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
-    }
-
-    stage('Setup & Test') {
-      steps {
+        // Combined setup and test commands into one shell block
         sh '''
-          pip install -r requirements.txt
+          python3 -m venv venv && \
+          . venv/bin/activate && \
+          pip install -r requirements.txt && \
           pytest
         '''
       }
@@ -31,6 +45,12 @@ pipeline {
           ./deploy_flask.sh
         '''
       }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()  // wipe workspace after build
     }
   }
 }
