@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'Node01' }
+  agent any
 
   stages {
     stage('Git Checkout') {
